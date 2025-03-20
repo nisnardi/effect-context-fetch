@@ -1,51 +1,60 @@
-import React, { useState, useCallback, useRef } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import React, { useState, useCallback, useRef, memo } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-export default function Parent() {
+const ComponenteBotonHijo = memo(({ onPress }: { onPress: () => void }) => {
+  console.log("Componente Hijo se re-renderizó!");
+  return (
+    <TouchableOpacity onPress={onPress} style={styles.button}>
+      <Text style={styles.textButton}>Botón del componente hijo</Text>
+    </TouchableOpacity>
+  );
+});
+
+export default function Callback() {
   const [count, setCount] = useState(0);
-  // const handlePress = useCallback(() => {
-  //   console.log("Button clicked");
-  // }, []);
+
   const handlePress = useCallback(() => {
-    console.log("Button clicked");
+    console.log("Se apretó el botón");
   }, []);
 
-  // Track the function's reference
   const functionRef = useRef(handlePress);
-  console.log("Same function reference:", functionRef.current === handlePress);
+
+  console.log(
+    "Es la función y la referencia el mismo valor?",
+    functionRef.current === handlePress
+  );
 
   return (
-    <View style={{ alignItems: "center", marginTop: 50 }}>
-      <Text style={{ fontSize: 24 }}>Count: {count}</Text>
-      <Child onPress={handlePress} />
+    <View style={styles.container}>
+      <Text style={styles.text}>Contador: {count}</Text>
+      <ComponenteBotonHijo onPress={handlePress} />
       <TouchableOpacity
         onPress={() => setCount(count + 1)}
-        style={{
-          marginTop: 10,
-          padding: 10,
-          backgroundColor: "blue",
-          borderRadius: 5,
-        }}
+        style={styles.button}
       >
-        <Text style={{ color: "white" }}>Increase Count</Text>
+        <Text style={styles.textButton}>Actualizar en +1 el contador</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-function Child({ onPress }) {
-  console.log("Child component re-rendered!");
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={{
-        marginTop: 10,
-        padding: 10,
-        backgroundColor: "green",
-        borderRadius: 5,
-      }}
-    >
-      <Text style={{ color: "white" }}>Click Me</Text>
-    </TouchableOpacity>
-  );
-}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  text: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+  button: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: "#CCC",
+    borderRadius: 5,
+  },
+  textButton: {
+    color: "black",
+  },
+});
